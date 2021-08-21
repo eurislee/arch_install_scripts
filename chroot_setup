@@ -1,0 +1,55 @@
+#!/bin/sh
+
+set -e
+
+read -p "Enter username to be created:" user_name
+read -p "Enter root password:" root_password
+read -p "Enter user password:" user_password
+read -p "Enter host name:" host_name
+echo -e ":: Select root partition\n"
+echo -e "1) /dev/nvme0n1p1 2) /dev/sda1\n"
+read -p "Enter a selection:" root_partition
+if [[ $root_partition == 1 ]]; then
+    root_partition="/dev/nvme0n1p1"
+elif [[ $root_partition == 2 ]]; then
+    root_partition="/dev/sda1"
+fi
+
+echo -e "Setting Localtime...\n"
+ln -sf /usr/share/zoneinfo/America/Los_Angeles /etc/localtime
+hwclock --systohc
+
+echo -e "Configuring Locale...\n"
+sed -i 's/^#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+
+echo -e "Account Management...\n"
+echo $host_name > /etc/hostname
+echo "
+127.0.0.1	localhost
+::1 		localhost
+127.0.1.1	$host_name.localdomain	$host_name" >> /etc/hosts
+mkinitcpio -P
+echo "root:$root_password" | chpasswd
+
+bootctl install
+echo "
+default arch.conf
+timeout 4
+console-mode max
+editor no
+" >> boot/loader/loader.conf
+echo "title Arch Linux
+linux   /vmlinuz-linux
+initrd  /initramfs-linux.img
+options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" > boot/loader/entries/arch.conf
+
+
+sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+useradd -m -G wheel -s /bin/bash $user_name
+echo "$user_name:$user_password" | chpasswd
+
+echo -e "Finally Done.\n"
+
+exit

@@ -1,0 +1,137 @@
+#!/bin/sh
+
+set -e
+
+echo -e "Formatting Partitions...\n"
+
+echo -e ":: Select system disk to partition\n"
+echo -e "1) nvme0n1 2) sda 3) sdb\n"
+read -p "Enter a selection:" disk_system_name
+
+if [[ $disk_system_name == 1 ]]; then
+	disk_system_name="nvme0n1"
+elif [[ $disk_system_name == 2 ]]; then
+	disk_system_name="sda"
+elif [[ $disk_system_name == 3 ]]; then
+	disk_system_name="sdb"
+fi	
+
+wipefs --all /dev/$disk_system_name
+fdisk --wipe always --wipe-partitions always /dev/$disk_system_name << EOF
+g
+n
+
+
++198G
+t
+20
+n
+
+
++520M
+t
+
+1
+n
+
+
+
+t
+
+19
+w
+EOF
+
+echo -e ":: Select home disk to partition\n" 
+echo -e "1) nvme0n1 2) sda 3) sdb\n"
+read -p "Enter a selection:" disk_home_name
+
+if [[ $disk_home_name == 1 ]]; then
+	disk_home_name="nvme0n1"
+elif [[ $disk_home_name == 2 ]]; then
+	disk_home_name="sda"
+elif [[ $disk_home_name == 3 ]]; then
+	disk_home_name="sdb"
+fi	
+
+wipefs --all /dev/$disk_home_name
+fdisk --wipe always --wipe-partitions always /dev/$disk_home_name << EOF
+g
+n
+
+
+
+t
+28
+w
+EOF
+
+echo -e "Mounting Partitions...\n"
+
+if [[ $disk_system_name == sd[a-z] ]]; then
+    mkfs.ext4 /dev/$disk_system_name"1"
+    mount /dev/$disk_system_name"1" /mnt 
+    mkfs.fat -F32 /dev/$disk_system_name"2"
+    mkdir -p /mnt/boot 
+    mount /dev/$disk_system_name"2" /mnt/boot
+    mkfs.ext4 /dev/$disk_home_name"1"
+    mkdir -p /mnt/home 
+    mount /dev/$disk_home_name"1" /mnt/home 
+    mkswap /dev/$disk_system_name"3"
+    swapon /dev/$disk_system_name"3"
+    
+else
+    mkfs.ext4 /dev/$disk_system_name"p1"
+    mount /dev/$disk_system_name"p1" /mnt 
+    mkfs.fat -F32 /dev/$disk_system_name"p2"
+    mkdir -p /mnt/boot 
+    mount /dev/$disk_system_name"p2" /mnt/boot
+    mkfs.ext4 /dev/$disk_home_name"1"
+    mkdir -p /mnt/home 
+    mount /dev/$disk_home_name"1" /mnt/home 
+    mkswap /dev/$disk_system_name"p3"
+    swapon /dev/$disk_system_name"p3"
+
+fi
+
+echo -e "Adding Fastest Mirror in Pacman Mirrorlist...\n"
+echo -e ":: Select a country:\n"
+echo -e "1) US 2) CN\n"
+read -p "Enter a selection:" mirrorlist_country
+
+if [[ $mirrorlist_country == 1 ]]; then
+    echo "##
+## Arch Linux repository mirrorlist
+## Generated on 2021-03-01
+##
+## United States
+Server = https://mirrors.ocf.berkeley.edu/archlinux/\$repo/os/\$arch
+Server = https://mirrors.mit.edu/archlinux/\$repo/os/\$arch
+Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch
+" > /etc/pacman.d/mirrorlist
+else
+    echo "##
+## Arch Linux repository mirrorlist
+## Generated on 2021-03-01
+##
+## China
+Server = https://mirrors.ustc.edu.cn/archlinux/\$repo/os/\$arch
+Server = https://mirrors.tuna.tsinghua.edu.cn/archlinux/\$repo/os/\$arch
+" > /etc/pacman.d/mirrorlist
+fi	
+
+pacman -Syy
+yes | pacman -S archlinux-keyring
+
+echo -e "Performing Pacstrap Operation...\n"
+pacstrap /mnt base base-devel linux linux-firmware vim dhcpcd
+
+echo -e "Generate an fstab file...\n"
+genfstab -U /mnt >> /mnt/etc/fstab
+
+echo -e "Change root into the new system...\n"
+arch-chroot /mnt sh -c "$(curl -fsSL https://raw.githubusercontent.com/eurislee/arch_install_scripts/main/chroot_setup)"
+
+echo -e "Installation Complete.\n"
+umount -R /mnt 
+reboot
