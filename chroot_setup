@@ -3,12 +3,15 @@
 set -e
 
 read -p "Enter username to be created:" user_name
-read -p "Enter root password:" root_password
-read -p "Enter user password:" user_password
+read -s -p "Enter root password:" root_password
+read -s -p "Enter user password:" user_password
 read -p "Enter host name:" host_name
 echo -e ":: Select root partition\n"
 echo -e "1) /dev/nvme0n1p1 2) /dev/sda1\n"
-read -p "Enter a selection:" root_partition
+read -p "Enter a selection (default=1):" root_partition
+
+root_partition=1
+
 if [[ $root_partition == 1 ]]; then
     root_partition="/dev/nvme0n1p1"
 elif [[ $root_partition == 2 ]]; then
