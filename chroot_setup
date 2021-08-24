@@ -3,8 +3,10 @@
 set -e
 
 read -p "Enter username to be created:" user_name
-read -s -p "Enter root password:" root_password
-read -s -p "Enter user password:" user_password
+read -p "Enter root password:" -s root_password
+printf "\n"
+read -p "Enter user password:" -s user_password
+printf "\n"
 read -p "Enter host name:" host_name
 echo -e ":: Select root partition\n"
 echo -e "1) /dev/nvme0n1p1 2) /dev/sda1\n"
