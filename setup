@@ -55,7 +55,7 @@ read -p "Enter a selection (default=2):" disk_home_name
 
 if [ -z "$disk_home_name" ]
 then
-    $disk_home_name=sda
+    disk_home_name=sda
 fi
 
 if [[ $disk_home_name == 1 ]]; then
