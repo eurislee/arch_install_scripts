@@ -7,8 +7,12 @@ echo -e "Formatting Partitions...\n"
 echo -e ":: Select system disk to partition\n"
 echo -e "1) nvme0n1 2) sda 3) sdb\n"
 
-disk_system_name=nvme0n1
 read -p "Enter a selection (default=1):" disk_system_name
+
+if [ -z "$disk_system_name" ]
+then
+    disk_system_name=nvme0n1
+fi
 
 if [[ $disk_system_name == 1 ]]; then
 	disk_system_name="nvme0n1"
@@ -47,8 +51,12 @@ EOF
 echo -e ":: Select home disk to partition\n" 
 echo -e "1) nvme0n1 2) sda 3) sdb\n"
 
-disk_home_name=sda
 read -p "Enter a selection (default=2):" disk_home_name
+
+if [ -z "$disk_home_name" ]
+then
+    $disk_home_name=sda
+fi
 
 if [[ $disk_home_name == 1 ]]; then
 	disk_home_name="nvme0n1"
