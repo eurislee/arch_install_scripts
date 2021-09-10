@@ -11,8 +11,12 @@ read -p "Enter host name:" host_name
 echo -e ":: Select root partition\n"
 echo -e "1) /dev/nvme0n1p1 2) /dev/sda1\n"
 
-root_partition=1
 read -p "Enter a selection (default=1):" root_partition
+
+if [ -z "$root_partition" ]
+then
+    root_partition=1
+fi
 
 if [[ $root_partition == 1 ]]; then
     root_partition="/dev/nvme0n1p1"
