@@ -111,7 +111,10 @@ echo -e ":: Select a country:\n"
 echo -e "1) US 2) CN\n"
 read -p "Enter a selection (default=1):" mirrorlist_country
 
-mirrorlist_country=1
+if [ -z "$mirrorlist_country" ]
+then
+    mirrorlist_country=1
+fi
 
 if [[ $mirrorlist_country == 1 ]]; then
     echo "##
