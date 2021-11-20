@@ -7,7 +7,7 @@ echo -e "Formatting Partitions...\n"
 echo -e ":: Select system disk to partition\n"
 echo -e "1) nvme0n1 2) sda 3) sdb\n"
 
-read -p "Enter a selection (default=1):" disk_system_name
+read -p "Enter a selection (default=1): " disk_system_name
 
 if [ -z "$disk_system_name" ]
 then
@@ -51,7 +51,7 @@ EOF
 echo -e ":: Select home disk to partition\n" 
 echo -e "1) nvme0n1 2) sda 3) sdb\n"
 
-read -p "Enter a selection (default=2):" disk_home_name
+read -p "Enter a selection (default=2): " disk_home_name
 
 if [ -z "$disk_home_name" ]
 then
@@ -77,6 +77,11 @@ t
 28
 w
 EOF
+
+read -r -p "Have you already partitioned your disk, built filesystem correctly? [Y/n]" confirm
+if [[ ! "$confirm" == (y | Y)]]; then
+    exit
+fi
 
 echo -e "Mounting Partitions...\n"
 
@@ -109,7 +114,7 @@ fi
 echo -e "Adding Fastest Mirror in Pacman Mirrorlist...\n"
 echo -e ":: Select a country:\n"
 echo -e "1) US 2) CN\n"
-read -p "Enter a selection (default=1):" mirrorlist_country
+read -p "Enter a selection (default=1): " mirrorlist_country
 
 if [ -z "$mirrorlist_country" ]
 then

@@ -2,16 +2,16 @@
 
 set -e
 
-read -p "Enter username to be created:" user_name
-read -p "Enter root password:" -s root_password
+read -p "Enter username to be created: " user_name
+read -p "Enter root password: " -s root_password
 printf "\n"
-read -p "Enter user password:" -s user_password
+read -p "Enter user password: " -s user_password
 printf "\n"
-read -p "Enter host name:" host_name
+read -p "Enter host name: " host_name
 echo -e ":: Select root partition\n"
 echo -e "1) /dev/nvme0n1p1 2) /dev/sda1\n"
 
-read -p "Enter a selection (default=1):" root_partition
+read -p "Enter a selection (default=1): " root_partition
 
 if [ -z "$root_partition" ]
 then
