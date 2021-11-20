@@ -78,8 +78,8 @@ t
 w
 EOF
 
-read -r -p "Have you already partitioned your disk, built filesystem correctly? [Y/n]" confirm
-if [[ ! "$confirm" == (y | Y)]]; then
+read -r -p "Have you already partitioned your disk, built filesystem correctly? [y/N]" confirm
+if [[ ! "$confirm" =~ ^(y|Y) ]]; then
     exit
 fi
 
