@@ -55,7 +55,7 @@ initrd  /initramfs-linux.img
 options root=PARTUUID=$(blkid -s PARTUUID -o value $root_partition) rw" > boot/loader/entries/arch.conf
 
 
-sed -i 's/^# %wheel ALL=(ALL) ALL$/%wheel ALL=(ALL) ALL/' /etc/sudoers
+sed -i 's/^# %wheel ALL=(ALL:ALL) ALL$/%wheel ALL=(ALL:ALL) ALL/' /etc/sudoers
 useradd -m -G wheel -s /bin/bash $user_name
 echo "$user_name:$user_password" | chpasswd
 
