@@ -127,9 +127,9 @@ if [[ $mirrorlist_country == 1 ]]; then
 ## Generated on 2021-03-01
 ##
 ## United States
-Server = https://mirrors.ocf.berkeley.edu/archlinux/\$repo/os/\$arch
 Server = https://mirrors.mit.edu/archlinux/\$repo/os/\$arch
 Server = https://mirrors.kernel.org/archlinux/\$repo/os/\$arch
+Server = https://mirrors.ocf.berkeley.edu/archlinux/\$repo/os/\$arch
 " > /etc/pacman.d/mirrorlist
 else
     echo "##
